@@ -7,6 +7,7 @@ var Book = function (book) {
   this.description = book.description;
   this.image = book.image;
 };
+
 Book.create = function (newEmp, result) {
   dbConn.query("INSERT INTO books set ?", newEmp, function (err, res) {
     if (err) {
@@ -34,7 +35,6 @@ Book.findAll = function (result) {
       console.log("error: ", err);
       result(null, err);
     } else {
-      console.log("books : ", res);
       result(null, res);
     }
   });

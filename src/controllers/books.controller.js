@@ -3,22 +3,39 @@ const Book = require("../models/books.models");
 
 exports.findAll = function (req, res) {
   Book.findAll(function (err, book) {
-    console.log("controller");
     if (err) res.send(err);
-    console.log("res", book);
+
     res.send(book);
   });
 };
+
 exports.create = function (req, res) {
-  const new_book = new Book(req.body);
-  //handles null error
-  if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
+  const bookObj = {
+    name: req.body.name || "",
+    author: req.body.author || "",
+    description: req.body.description || "",
+    image: req.body.image || "",
+  };
+
+  if (
+    bookObj?.name.length <= 0 ||
+    bookObj?.author.length <= 0 ||
+    bookObj?.description.length <= 0
+  ) {
+    res.status(422).send({
+      error: true,
+      message: "Validation Error",
+    });
+  } else if (
+    req.body.constructor === Object &&
+    Object.keys(req.body).length === 0
+  ) {
     res.status(400).send({
       error: true,
       message: "Falha ao inserir registro, preencha os dados obrigatórios",
     });
   } else {
-    Book.create(new_book, function (err, book) {
+    Book.create(bookObj, function (err, book) {
       if (err) res.send(err);
       res.json({
         error: false,
@@ -28,6 +45,7 @@ exports.create = function (req, res) {
     });
   }
 };
+
 exports.findById = function (req, res) {
   Book.findById(req.params.id, function (err, book) {
     if (err) res.send(err);
